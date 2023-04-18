@@ -277,11 +277,9 @@ def geodesic_distmat_dijkstra(vertices, faces):
     return geod_dist
 
 
-def heat_geodmat_robust(vertices, faces, verbose=False):
-    n_vertices = vertices.shape[0]
+def heat_geodmat_robust(n_vertices, solver, verbose=False):
     distmat = np.zeros((n_vertices, n_vertices))
 
-    solver = pp3d.MeshHeatMethodDistanceSolver(vertices, faces)
     iterable = tqdm(range(n_vertices)) if verbose else range(n_vertices)
 
     for vertind in iterable:

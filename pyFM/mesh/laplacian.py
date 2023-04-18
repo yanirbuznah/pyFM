@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.sparse as sparse
+import scipy.sparse.linalg
 
 
 def dia_area_mat(vertices, faces, faces_areas=None):
@@ -140,8 +141,7 @@ def laplacian_spectrum(W, A, spectrum_size=200):
     spectrum_size : int - number of eigenvalues to compute
     """
     try:
-        eigenvalues, eigenvectors = sparse.linalg.eigsh(W, k=spectrum_size, M=A,
-                                                        sigma=-0.01)
+        eigenvalues, eigenvectors = sparse.linalg.eigsh(W, k=spectrum_size, M=A,sigma=-0.01)
 
     except RuntimeError:
         # raise ValueError('Matrices are not positive semidefinite')

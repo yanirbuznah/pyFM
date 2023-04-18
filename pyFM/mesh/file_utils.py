@@ -1,7 +1,7 @@
 import os
 from shutil import copyfile
 import numpy as np
-
+from scipy.io import loadmat
 
 def read_off(filepath):
     """
@@ -61,6 +61,22 @@ def read_obj(filepath):
 
     return np.asarray(vertices), np.asarray(faces)
 
+def read_mat(filepath):
+    """
+    Read a .mat file from TOSCA dataset
+    Parameters
+    ----------
+    filepath
+
+    Returns
+    -------
+
+    """
+    surface = loadmat(filepath)
+    ver = surface['N'][0, 0]['xyz']
+    tri = surface['N'][0, 0]['tri']
+    tri -= 1
+    return  ver, tri
 
 def write_off(filepath, vertices, faces, precision=None, face_colors=None):
     """

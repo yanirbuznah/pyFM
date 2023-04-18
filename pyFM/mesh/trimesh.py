@@ -497,7 +497,7 @@ class TriMesh:
             geod_dist = geom.geodesic_distmat_dijkstra(self.vertlist, self.facelist)
 
         elif robust or self._intrinsic:
-            geod_dist = geom.heat_geodmat_robust(self.vertlist, self.facelist, verbose=verbose)
+            geod_dist = geom.heat_geodmat_robust(self.n_vertices, self._get_solver(), verbose=verbose)
 
         else:
             # Ensure LB matrices are processed.
@@ -539,6 +539,14 @@ class TriMesh:
 
         return geod_dist
 
+    def _get_solver(self,):
+        if self._solver_geod is None:
+            if self.facelist is not None:
+                self._solver_geod = pp3d.MeshHeatMethodDistanceSolver(self.vertlist, self.facelist)
+            else:
+                self._solver_geod = pp3d.PointCloudHeatSolver(self.vertlist)
+        return self._solver_geod
+
     def geod_from(self, i, robust=True):
         """
         Compute geodesic distances from vertex i sing the Heat Method
@@ -552,12 +560,8 @@ class TriMesh:
         ----------------------
         dist : (n,) distances to vertex i
         """
-
         if robust or self._intrinsic:
-            if self._solver_geod is None:
-                self._solver_geod = pp3d.MeshHeatMethodDistanceSolver(self.vertlist, self.facelist)
-
-            return self._solver_geod.compute_distance(i)
+            return self._get_solver().compute_distance(i)
 
         if self.A is None or self.W is None:
             self.process(k=0)
@@ -930,7 +934,8 @@ class TriMesh:
             self.vertlist, self.facelist = file_utils.read_off(meshpath)
         elif os.path.splitext(meshpath)[1] == '.obj':
             self.vertlist, self.facelist = file_utils.read_obj(meshpath)
-
+        elif os.path.splitext(meshpath)[1] == '.mat':
+            self.vertlist, self.facelist = file_utils.read_mat(meshpath)
         else:
             raise ValueError('Provide file in .off or .obj format')
 
