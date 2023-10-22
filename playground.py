@@ -1,10 +1,9 @@
 import meshplot as mp
 import numpy as np
-import open3d as o3d
 
 from pyFM.mesh import TriMesh
 
-obj = 'data/lion-00'
+
 def plot_mesh(myMesh, cmap=None):
     mp.plot(myMesh.vertlist, myMesh.facelist, c=cmap)
 
@@ -20,25 +19,42 @@ def visu(vertices):
     return cmap
 
 
-mesh1 = TriMesh(f'{obj}.off', area_normalize=True, center=False)
 
-# Load the mesh
-mesh = o3d.io.read_triangle_mesh(f"{obj}.off")
-print(mesh)
-# Convert the mesh to a point cloud
-pcd = mesh.sample_points_uniformly(number_of_points=10000)
-print(pcd)
 
-pcd1 = TriMesh(np.array(pcd.points))
 
-pcd1.geod_from(1000)
+mesh1 = TriMesh(np.load('data/lion-00_1e4.npy'))
+mesh2 = TriMesh(np.load('data/cat-00_1e4.npy'))
+# mesh1 = TriMesh('data/cat-00.off', area_normalize=True, center=False)
+# mesh2 = TriMesh('data/lion-00.off')
 
-# plot_mesh(pcd1, cmap=visu(np.array(pcd.points)))
-# Visualize the point cloud
-o3d.visualization.draw_geometries([pcd])
+print(f'Mesh 1 : {mesh1.n_vertices:4d} vertices, {mesh1.n_faces:5d} faces\n'
+      f'Mesh 2 : {mesh2.n_vertices:4d} vertices, {mesh2.n_faces:5d} faces')
 
-#save nd array to file
-np.save(f'{obj}_1e4.npy', np.array(pcd.points))
+double_plot(mesh1,mesh2)
 
-#load nd array from file
-pcd2 = TriMesh(np.load(f'{obj}.npy'))
+
+mesh1 = TriMesh(np.load('data/lion-00_1e4.npy'))
+mesh2 = TriMesh(np.load('data/cat-00_1e4.npy'))
+# mesh1 = TriMesh('data/cat-00.off', area_normalize=True, center=False)
+# mesh2 = TriMesh('data/lion-00.off')
+
+print(f'Mesh 1 : {mesh1.n_vertices:4d} vertices, {mesh1.n_faces:5d} faces\n'
+      f'Mesh 2 : {mesh2.n_vertices:4d} vertices, {mesh2.n_faces:5d} faces')
+
+double_plot(mesh1,mesh2)
+
+
+from pyFM.functional import FunctionalMapping
+
+process_params = {
+    'n_ev': (500,500),  # Number of eigenvalues on source and Target
+    'landmarks': np.loadtxt('data/landmarks_small.txt',dtype=int)[:5],  # loading 5 landmarks
+    'subsample_step': 5,  # In order not to use too many descriptors
+    'descr_type': 'WKS',  # WKS or HKS
+}
+
+model = FunctionalMapping(mesh1,mesh2)
+model.preprocess(**process_params,verbose=True);
+
+model.mesh1.save_eigen_vectors('lion-00_1e4_eigen_vectors.npy')
+model.mesh1.save_eigen_vectors('cat-00_1e4_eigen_vectors.npy')

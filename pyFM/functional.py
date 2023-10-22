@@ -229,23 +229,16 @@ class FunctionalMapping:
             self.descr1 = sg.mesh_HKS(self.mesh1, n_descr, k=self.k1)  # (N1, n_descr)
             self.descr2 = sg.mesh_HKS(self.mesh2, n_descr, k=self.k2)  # (N2, n_descr)
 
-            if use_lm:
-                lm_descr1 = sg.mesh_HKS(self.mesh1, n_descr,landmarks=lmks1, k=self.k1)  # (N1, p*n_descr)
-                lm_descr2 = sg.mesh_HKS(self.mesh2, n_descr, landmarks=lmks2, k=self.k2)  # (N2, p*n_descr)
-
-                self.descr1 = np.hstack([self.descr1, lm_descr1])  # (N1, (p+1)*n_descr)
-                self.descr2 = np.hstack([self.descr2, lm_descr2])  # (N2, (p+1)*n_descr)
-
         elif descr_type == 'WKS':
             self.descr1 = sg.mesh_WKS(self.mesh1, n_descr, k=self.k1)  # (N1, n_descr)
             self.descr2 = sg.mesh_WKS(self.mesh2, n_descr, k=self.k2)  # (N2, n_descr)
 
-            if use_lm:
-                lm_descr1 = sg.mesh_WKS(self.mesh1, n_descr, landmarks=lmks1, k=self.k1)  # (N1, p*n_descr)
-                lm_descr2 = sg.mesh_WKS(self.mesh2, n_descr, landmarks=lmks2, k=self.k2)  # (N2, p*n_descr)
+        if use_lm:
+            lm_descr1 = sg.mesh_WKS(self.mesh1, n_descr, landmarks=lmks1, k=self.k1)  # (N1, p*n_descr)
+            lm_descr2 = sg.mesh_WKS(self.mesh2, n_descr, landmarks=lmks2, k=self.k2)  # (N2, p*n_descr)
 
-                self.descr1 = np.hstack([self.descr1, lm_descr1])  # (N1, (p+1)*n_descr)
-                self.descr2 = np.hstack([self.descr2, lm_descr2])  # (N2, (p+1)*n_descr)
+            self.descr1 = np.hstack([self.descr1, lm_descr1])  # (N1, (p+1)*n_descr)
+            self.descr2 = np.hstack([self.descr2, lm_descr2])  # (N2, (p+1)*n_descr)
 
         else:
             raise ValueError(f'Descriptor type "{descr_type}" not implemented')

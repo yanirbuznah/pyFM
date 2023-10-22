@@ -949,6 +949,34 @@ class TriMesh:
         center = kwargs['center'] if 'center' in kwargs.keys() else False
         return rotation, translation, area_normalize, center
 
+    def load_eigen_vectors(self, filename):
+        """
+        Load eigen vectors from a file
+
+        Parameters:
+        --------------------------
+        filename : path to file
+        """
+        self.eigenvectors = np.load(filename)
+        try:
+            if self.eigenvalues is None:
+                self.eigenvalues = np.array([0,0,0,0,0,0.0002,0.003,0.01,0.123,1.43])
+        except FileNotFoundError:
+            pass
+
+    def save_eigen_vectors(self, filename):
+        """
+        Save eigen vectors to a file
+
+        Parameters:
+        --------------------------
+        filename : path to file
+        """
+        np.save(filename, self.eigenvectors)
+        try:
+            np.save(filename.replace('eigenvectors', 'eigenvalues'), self.eigenvalues)
+        except FileNotFoundError:
+            pass
     def _init_all_attributes(self):
 
         self.path = None
